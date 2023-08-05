@@ -221,6 +221,7 @@ public class ChairHandler {
         chair.setCustomNameVisible(false);
 
         Location n = p.getLocation().clone();
+        n.setPitch(0);
         n.setYaw(loc.getYaw());
         p.teleport(n);
 
