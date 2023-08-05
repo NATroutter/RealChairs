@@ -1,0 +1,8 @@
+main: fi.natroutter.realchairs.RealChairs
+name: RealChairs
+version: ${project.version}
+author: NATroutter
+description: ${project.description}
+api-version: 1.18
+website: ${project.url}
+depend: [NATLibs]
