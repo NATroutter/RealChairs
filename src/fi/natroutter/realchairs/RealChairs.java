@@ -4,7 +4,7 @@ import fi.natroutter.realchairs.handlers.ChairHandler;
 import fi.natroutter.natlibs.handlers.database.YamlDatabase;
 import lombok.Getter;
 import fi.natroutter.realchairs.commands.MainCommand;
-import fi.natroutter.realchairs.handlers.SittingHandler;
+import fi.natroutter.realchairs.handlers.ChairListener;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.PluginManager;
@@ -22,16 +22,14 @@ public class RealChairs extends JavaPlugin {
         instance = this;
 
         database = new YamlDatabase(this);
-        chairHandler = new ChairHandler();
+        chairHandler = new ChairHandler(this);
 
         CommandMap map = Bukkit.getCommandMap();
         PluginManager pm = Bukkit.getPluginManager();
 
         map.register("RealChairs", new MainCommand(this));
 
-        pm.registerEvents(new SittingHandler(), this);
-
-        chairHandler.load();
+        pm.registerEvents(new ChairListener(), this);
     }
 
     @Override

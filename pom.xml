@@ -50,7 +50,7 @@
         <resources>
             <resource>
                 <directory>resources</directory>
-                <filtering>false</filtering>
+                <filtering>true</filtering>
             </resource>
         </resources>
     </build>
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>fi.natroutter</groupId>
             <artifactId>natlibs</artifactId>
-            <version>4.0.11</version>
+            <version>4.0.12</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

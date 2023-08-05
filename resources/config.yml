@@ -1,4 +1,4 @@
 General:
   #Supported languages: en_us, fi_fi (you can add more languages in the langs folder)
   Language: en_us
-  UseMessages: true
+  UseMessages: false
