@@ -22,6 +22,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,14 +31,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainCommand extends Command {
 
-    private ChairHandler chairHandler;
+    private final ChairHandler chairHandler = RealChairs.getChairHandler();
 
     private final ConcurrentHashMap<UUID, String> wipeConfirm = new ConcurrentHashMap<>();
 
-    public MainCommand(RealChairs chairs) {
+    public MainCommand() {
         super("RealChairs");
-        this.setAliases(List.of("rc", "chair", "chairs"));
-        this.chairHandler = chairs.getChairHandler();
+        this.setAliases(Config.CMD_ALIASES.asStringList());
     }
 
     @Override
@@ -55,18 +56,25 @@ public class MainCommand extends Command {
             p.sendMessage("§8§l§m━━━━━━━━━━━━§8§l|§5§l RealChairs §8§l|§m━━━━━━━━━━━━");
             p.sendMessage(" ");
         } else if (args.length == 1) {
-
-            if (args[0].equalsIgnoreCase("help")) {
-                if (!p.hasPermission("realchairs.help")) {
+            if (args[0].equalsIgnoreCase(Config.CMD_HELP_ARG.asString())) {
+                if (!p.hasPermission(Config.CMD_HELP_PERM.asString())) {
                     p.sendMessage(Lang.NO_PERM.prefixed());
                 }
                 p.sendMessage(Lang.HELP_MESSAGE.asSingleComponent(
-                    Placeholder.parsed("command", label),
-                    Placeholder.parsed("selected_height", String.valueOf(ChairHandler.getHeight(p)))
+                        Placeholder.parsed("command", label),
+                        Placeholder.parsed("selected_height", String.valueOf(ChairHandler.getHeight(p,null))),
+                        Placeholder.parsed("arg_add", Config.CMD_ADD_ARG.asString()),
+                        Placeholder.parsed("arg_sit", Config.CMD_SIT_ARG.asString()),
+                        Placeholder.parsed("arg_list", Config.CMD_LIST_ARG.asString()),
+                        Placeholder.parsed("arg_remove", Config.CMD_REMOVE_ARG.asString()),
+                        Placeholder.parsed("arg_reload", Config.CMD_RELOAD_ARG.asString()),
+                        Placeholder.parsed("arg_show", Config.CMD_SHOW_ARG.asString()),
+                        Placeholder.parsed("arg_height", Config.CMD_HEIGHT_ARG.asString()),
+                        Placeholder.parsed("arg_tool", Config.CMD_TOOL_ARG.asString()),
+                        Placeholder.parsed("arg_disable", Config.CMD_HEIGHT_DISABLE.asString())
                 ));
-
-            } else if (args[0].equalsIgnoreCase("wipe")) {
-                if (!p.hasPermission("realchairs.wipe")) {
+            } else if (args[0].equalsIgnoreCase(Config.CMD_WIPE_ARG.asString())) {
+                if (!p.hasPermission(Config.CMD_WIPE_PERM.asString())) {
                     p.sendMessage(Lang.NO_PERM.prefixed());
                 }
                 if (chairHandler.getChairs().size() > 0) {
@@ -88,29 +96,29 @@ public class MainCommand extends Command {
                 } else {
                     p.sendMessage(Lang.NO_CHAIRS.prefixed());
                 }
-            } else if (args[0].equalsIgnoreCase("clean")) {
-                if (!p.hasPermission("realchairs.clean")) {
+            } else if (args[0].equalsIgnoreCase(Config.CMD_CLEAN_ARG.asString())) {
+                if (!p.hasPermission(Config.CMD_CLEAN_PERM.asString())) {
                     p.sendMessage(Lang.NO_PERM.prefixed());
                 }
                 chairHandler.cleanInvalid(p);
 
-            } else if (args[0].equalsIgnoreCase("tool")) {
-                if (!p.hasPermission("realchairs.tool")) {
+            } else if (args[0].equalsIgnoreCase(Config.CMD_TOOL_ARG.asString())) {
+                if (!p.hasPermission(Config.CMD_TOOL_PERM.asString())) {
                     p.sendMessage(Lang.NO_PERM.prefixed());
                 }
                 p.getInventory().addItem(Items.chairTool());
                 p.sendMessage(Lang.TOOL_ADDED_INV.prefixed());
 
-            } else if (args[0].equalsIgnoreCase("reload")) {
-                if (!p.hasPermission("realchairs.reload")) {
+            } else if (args[0].equalsIgnoreCase(Config.CMD_RELOAD_ARG.asString())) {
+                if (!p.hasPermission(Config.CMD_RELOAD_PERM.asString())) {
                     p.sendMessage(Lang.NO_PERM.prefixed());
                 }
                 Config.LANGUAGE.reloadFile();
                 Lang.PREFIX.reloadFile();
                 p.sendMessage(Lang.RELOADED.prefixed());
 
-            } else if (args[0].equalsIgnoreCase("add")) {
-                if (!p.hasPermission("realchairs.add")) {
+            } else if (args[0].equalsIgnoreCase(Config.CMD_ADD_ARG.asString())) {
+                if (!p.hasPermission(Config.CMD_ADD_PERM.asString())) {
                     p.sendMessage(Lang.NO_PERM.prefixed());
                 }
                 Block target = p.getTargetBlock(3, TargetBlockInfo.FluidMode.NEVER);
@@ -125,8 +133,8 @@ public class MainCommand extends Command {
                 }
                 chairHandler.addChair(p, UUID.randomUUID(), target, face);
 
-            } else if (args[0].equalsIgnoreCase("show")) {
-                if (!p.hasPermission("realchairs.show")) {
+            } else if (args[0].equalsIgnoreCase(Config.CMD_SHOW_ARG.asString())) {
+                if (!p.hasPermission(Config.CMD_SHOW_PERM.asString())) {
                     p.sendMessage(Lang.NO_PERM.prefixed());
                 }
                 if (chairHandler.getChairs().size() > 0 ) {
@@ -141,8 +149,8 @@ public class MainCommand extends Command {
                     p.sendMessage(Lang.NO_CHAIRS.prefixed());
                 }
 
-            } else if (args[0].equalsIgnoreCase("sit")) {
-                if (!p.hasPermission("realchairs.sit")) {
+            } else if (args[0].equalsIgnoreCase(Config.CMD_SIT_ARG.asString())) {
+                if (!p.hasPermission(Config.CMD_SIT_PERM.asString())) {
                     p.sendMessage(Lang.NO_PERM.prefixed());
                 }
                 Block target = p.getTargetBlock(3, TargetBlockInfo.FluidMode.NEVER);
@@ -151,10 +159,10 @@ public class MainCommand extends Command {
                     p.sendMessage(Lang.INVALID_TARGET.prefixed());
                     return false;
                 }
-                chairHandler.sit(p, target, face, Chair.DEFAULT_HEIGHT);
+                chairHandler.sit(p, target, face, Chair.defaultHeight(target));
 
-            } else if (args[0].equalsIgnoreCase("remove")) {
-                if (!p.hasPermission("realchairs.remove")) {
+            } else if (args[0].equalsIgnoreCase(Config.CMD_REMOVE_ARG.asString())) {
+                if (!p.hasPermission(Config.CMD_REMOVE_PERM.asString())) {
                     p.sendMessage(Lang.NO_PERM.prefixed());
                 }
                 Block target = p.getTargetBlock(3, TargetBlockInfo.FluidMode.NEVER);
@@ -167,9 +175,9 @@ public class MainCommand extends Command {
                     return false;
                 }
                 chairHandler.removeChair(p, target);
-            } else if (args[0].equalsIgnoreCase("list")) {
+            } else if (args[0].equalsIgnoreCase(Config.CMD_LIST_ARG.asString())) {
 
-                if (!p.hasPermission("realchairs.list")) {
+                if (!p.hasPermission(Config.CMD_LIST_PERM.asString())) {
                     p.sendMessage(Lang.NO_PERM.prefixed());
                 }
 
@@ -203,12 +211,12 @@ public class MainCommand extends Command {
 
         } else if (args.length == 2) {
 
-            if (args[0].equalsIgnoreCase("sit")) {
-                if (!p.hasPermission("realchairs.sit")) {
+            if (args[0].equalsIgnoreCase(Config.CMD_SIT_ARG.asString())) {
+                if (!p.hasPermission(Config.CMD_SIT_PERM_SELECT_HEIGHT.asString())) {
                     p.sendMessage(Lang.NO_PERM.prefixed());
                 }
 
-                double height = Parser.doublee(args[1], Chair.DEFAULT_HEIGHT);
+                double height = Parser.doublee(args[1], Chair.defaultHeight());
                 Block target = p.getTargetBlock(3, TargetBlockInfo.FluidMode.NEVER);
                 BlockFace face = p.getTargetBlockFace(3, TargetBlockInfo.FluidMode.NEVER);
                 if (target == null || face == null) {
@@ -217,7 +225,7 @@ public class MainCommand extends Command {
                 }
                 chairHandler.sit(p, target, face, height);
 
-            } else if (args[0].equalsIgnoreCase("wipe")) {
+            } else if (args[0].equalsIgnoreCase(Config.CMD_WIPE_ARG.asString())) {
                 String id = wipeConfirm.getOrDefault(p.getUniqueId(), null);
                 if (id == null) {
                     p.sendMessage(Lang.NO_PENDING_CONFIRM.prefixed());
@@ -243,21 +251,25 @@ public class MainCommand extends Command {
                     chairHandler.deleteEveryting(p);
                 }
 
-            } else if (args[0].equalsIgnoreCase("height")) {
-                if (!p.hasPermission("realchairs.height")) {
+            } else if (args[0].equalsIgnoreCase(Config.CMD_HEIGHT_ARG.asString())) {
+                if (!p.hasPermission(Config.CMD_HEIGHT_PERM.asString())) {
                     p.sendMessage(Lang.NO_PERM.prefixed());
                 }
-                double height = Parser.doublee(args[1], Chair.DEFAULT_HEIGHT);
+                if (args[1].equalsIgnoreCase(Config.CMD_HEIGHT_DISABLE.asString())) {
+                    ChairHandler.disableHeight(p);
+                    p.sendMessage(Lang.CUSTOM_HEIGHT_DISABLED.prefixed());
+                    return false;
+                }
+                double height = Parser.doublee(args[1], Chair.defaultHeight());
                 ChairHandler.setHeight(p, height);
                 p.sendMessage(Lang.CHAIR_HEIGHT_SET.prefixed(
                         Placeholder.parsed("height", String.valueOf(height))
                 ));
 
-            } else if (args[0].equalsIgnoreCase("add")) {
-                if (!p.hasPermission("realchairs.add")) {
+            } else if (args[0].equalsIgnoreCase(Config.CMD_ADD_ARG.asString())) {
+                if (!p.hasPermission(Config.CMD_ADD_PERM.asString())) {
                     p.sendMessage(Lang.NO_PERM.prefixed());
                 }
-                double height = Parser.doublee(args[1], Chair.DEFAULT_HEIGHT);
                 Block target = p.getTargetBlock(3, TargetBlockInfo.FluidMode.NEVER);
                 BlockFace face = p.getTargetBlockFace(3, TargetBlockInfo.FluidMode.NEVER);
                 if (target == null || face == null) {
@@ -268,6 +280,8 @@ public class MainCommand extends Command {
                     p.sendMessage(Lang.ALREADY_CHAIR.prefixed());
                     return false;
                 }
+                double height = Parser.doublee(args[1], Chair.defaultHeight(target));
+
                 chairHandler.addChair(p, UUID.randomUUID(), target, face, height);
 
             } else {
@@ -285,24 +299,34 @@ public class MainCommand extends Command {
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
 
         if (args.length == 1) {
-             return Utilities.getCompletesWithPerms(sender,args[0],List.of(
-                     new Complete("help","realchairs.help"),
-                     new Complete("add","realchairs.add"),
-                     new Complete("remove","realchairs.remove"),
-                     new Complete("list","realchairs.list"),
-                     new Complete("reload","realchairs.reload"),
-                     new Complete("sit","realchairs.sit"),
-                     new Complete("show","realchairs.show"),
-                     new Complete("tool","realchairs.tool"),
-                     new Complete("height","realchairs.height"),
-                     new Complete("clean","realchairs.clean"),
-                     new Complete("wipe","realchairs.wipe")
+            List<Complete> list = new ArrayList<>(List.of(
+                    new Complete(Config.CMD_HELP_ARG, Config.CMD_HELP_PERM),
+                    new Complete(Config.CMD_ADD_ARG, Config.CMD_ADD_PERM),
+                    new Complete(Config.CMD_REMOVE_ARG, Config.CMD_REMOVE_PERM),
+                    new Complete(Config.CMD_LIST_ARG, Config.CMD_LIST_PERM),
+                    new Complete(Config.CMD_RELOAD_ARG, Config.CMD_RELOAD_PERM),
+                    new Complete(Config.CMD_SHOW_ARG, Config.CMD_SHOW_PERM),
+                    new Complete(Config.CMD_TOOL_ARG, Config.CMD_TOOL_PERM),
+                    new Complete(Config.CMD_HEIGHT_ARG, Config.CMD_HEIGHT_PERM),
+                    new Complete(Config.CMD_CLEAN_ARG, Config.CMD_CLEAN_PERM),
+                    new Complete(Config.CMD_WIPE_ARG, Config.CMD_WIPE_PERM)
             ));
+            if (sender.hasPermission(Config.CMD_SIT_PERM.asString()) || sender.hasPermission(Config.CMD_SIT_PERM_SELECT_HEIGHT.asString())) {
+                if (sender.hasPermission(Config.CMD_SIT_PERM.asString())) {
+                    list.add(new Complete(Config.CMD_SIT_ARG, Config.CMD_SIT_PERM));
+
+                } else if (sender.hasPermission(Config.CMD_SIT_PERM_SELECT_HEIGHT.asString())) {
+                    list.add(new Complete(Config.CMD_SIT_ARG, Config.CMD_SIT_PERM_SELECT_HEIGHT));
+                }
+            }
+
+            return Utilities.getCompletesWithPerms(sender,args[0],list);
         } else if (args.length == 2) {
-            if (args[0].equalsIgnoreCase("height")) {
+            if (args[0].equalsIgnoreCase(Config.CMD_ADD_ARG.asString())) {
                 if (sender instanceof Player p) {
                     return Utilities.getCompletes(sender, args[1], List.of(
-                            String.valueOf(ChairHandler.getHeight(p))
+                            String.valueOf(ChairHandler.getHeight(p,null)),
+                            Config.CMD_HEIGHT_DISABLE.asString()
                     ));
                 }
             }

@@ -2,3 +2,93 @@ General:
   #Supported languages: en_us, fi_fi (you can add more languages in the langs folder)
   Language: en_us
   UseMessages: false
+  RequireEmptyHand: true
+Permissions:
+    Enabled: false
+    UsingChairs: realchairs.use
+Commands:
+    Aliases:
+    - "realchairs"
+    - "rc"
+    - "chairs"
+    - "chair"
+    Help:
+      Argument: "help"
+      Permission: "realchairs.help"
+    Add:
+      Argument: "add"
+      Permission: "realchairs.add"
+    Remove:
+      Argument: "remove"
+      Permission: "realchairs.remove"
+    List:
+        Argument: "list"
+        Permission: "realchairs.list"
+    Reload:
+        Argument: "reload"
+        Permission: "realchairs.reload"
+    Show:
+        Argument: "show"
+        Permission: "realchairs.show"
+    Tool:
+        Argument: "tool"
+        Permission: "realchairs.tool"
+    Height:
+        Argument: "height"
+        Permission: "realchairs.height"
+        Disable: "disable"
+    Clean:
+        Argument: "clean"
+        Permission: "realchairs.clean"
+    Wipe:
+        Argument: "wipe"
+        Permission: "realchairs.wipe"
+    Sit:
+      Argument: "sit"
+      Permission: "realchairs.sit"
+      PermissionSelectHeight: "realchairs.sit.height"
+Sounds:
+  Enabled: true
+  Sit:
+    Sound: "minecraft:ui.toast.in"
+    Pitch: 1.0
+    Volume: 50
+  Stand:
+    Sound: "minecraft:ui.toast.out"
+    Pitch: 1.0
+    Volume: 50
+Effects:
+  WhenSit:
+    Enabled: false
+    List:
+      entry1:
+        Type: REGENERATION
+        Duration: 120
+        Amplifier: 1
+        Ambient: false
+        Particles: false
+        Icon: false
+      entry2:
+        Type: ABSORPTION
+        Duration: 120
+        Amplifier: 1
+        Ambient: false
+        Particles: false
+        Icon: false
+  WhenStand:
+    Enabled: false
+    List:
+      entry1:
+        Type: REGENERATION
+        Duration: 120
+        Amplifier: 1
+        Ambient: false
+        Particles: false
+        Icon: false
+      entry2:
+        Type: ABSORPTION
+        Duration: 120
+        Amplifier: 1
+        Ambient: false
+        Particles: false
+        Icon: false

@@ -33,6 +33,9 @@ public enum Lang implements ILang {
     CHAIRS_WIPE_CANCELED("ChairsWipedCancelled"),
     INVALID_CONFIRM_ID("InvalidConfirmationID"),
     NO_PENDING_CONFIRM("NoPendingConfirmations"),
+    CUSTOM_HEIGHT_DISABLED("CustomChairHeightDisabled"),
+    CHAIR_OCCUPIED("ChairOccupied"),
+    STANDUP_PRESS("StandupPress"),
 
     CONFIRM_ACCEPT_BTN("ConfirmMessage.Accpet_button"),
     CONFIRM_ACCEPT_HINT("ConfirmMessage.Accept_hint"),

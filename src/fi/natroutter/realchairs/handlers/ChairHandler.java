@@ -1,6 +1,7 @@
 package fi.natroutter.realchairs.handlers;
 
 import fi.natroutter.realchairs.Utilities.Utils;
+import fi.natroutter.realchairs.events.ChairSitEvent;
 import fi.natroutter.realchairs.files.Config;
 import fi.natroutter.realchairs.files.Lang;
 import fi.natroutter.natlibs.handlers.database.YamlDatabase;
@@ -8,14 +9,19 @@ import fi.natroutter.natlibs.utilities.Utilities;
 import fi.natroutter.realchairs.RealChairs;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,8 +38,11 @@ public class ChairHandler {
 
     public static ArrayList<UUID> display = new ArrayList<>();
 
-    public static double getHeight(Player p) {return heights.getOrDefault(p.getUniqueId(), Chair.DEFAULT_HEIGHT);}
+    public static double getHeight(Player p, Block block) {
+        return heights.getOrDefault(p.getUniqueId(), Chair.defaultHeight(block));
+    }
     public static void setHeight(Player p, double height) {heights.put(p.getUniqueId(), height);}
+    public static void disableHeight(Player p) {heights.remove(p.getUniqueId());}
 
     public ChairHandler(JavaPlugin plugin) {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
@@ -47,11 +56,9 @@ public class ChairHandler {
                 for(Map.Entry<UUID, Chair> entry : chairs.entrySet()) {
                     Utils.drawBlock(p ,entry.getValue().getLocation(), ColorTable.DISPLAY);
                 }
-
             }
         }, 0, 5);
 
-        wipe();
         Set<String> keys = database.getKeys("Chairs");
         if (keys == null) return;
         for (String key : keys) {
@@ -63,24 +70,13 @@ public class ChairHandler {
         }
     }
 
-    public void unload() {wipe();}
-
-    public void wipe() {
+    public void deleteEmptyChairs() {
         for (World w : Bukkit.getServer().getWorlds()) {
             for (Entity ent : w.getEntities()) {
                 if (ent instanceof ArmorStand chair) {
                     PersistentDataContainer data = chair.getPersistentDataContainer();
                     if (!data.has(namespacedKey, PersistentDataType.INTEGER)) continue;
-
-                    if (!ent.getPassengers().isEmpty()) {
-                        for (Entity passenger : ent.getPassengers()) {
-                            passenger.leaveVehicle();
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(RealChairs.getInstance(), ()->{
-                                passenger.teleport(passenger.getLocation().add(0, 1, 0));
-                            }, 3);
-                        }
-                    }
-
+                    if (chair.getPassengers().size() > 0) continue;
                     ent.remove();
                 }
             }
@@ -94,6 +90,7 @@ public class ChairHandler {
             database.save("Chairs", uuid.toString(), null);
         }
         chairs.clear();
+        deleteEmptyChairs();
         p.sendMessage(Lang.ALL_CHAIRS_WIPED.prefixed());
     }
 
@@ -128,7 +125,7 @@ public class ChairHandler {
                 return chair.getHeight();
             }
         }
-        return Chair.DEFAULT_HEIGHT;
+        return Chair.defaultHeight(block);
     }
 
     public boolean isChair(Block block) {
@@ -150,7 +147,7 @@ public class ChairHandler {
     }
 
     public void addChair(Player p, UUID uuid, Block block, BlockFace face) {
-        addChair(p, uuid, block, face, getHeight(p));
+        addChair(p, uuid, block, face, getHeight(p,block));
     }
     public void addChair(Player p, UUID uuid, Block block, BlockFace face, double height) {
         Chair chair = new Chair(block.getLocation(), face, height);
@@ -196,8 +193,6 @@ public class ChairHandler {
     }
 
     public void sit(Player p, Block block, BlockFace face, double height) {
-        dismounts.put(p.getUniqueId(), p.getLocation());
-
         Location loc = block.getLocation();
         loc.setX(loc.getBlockX() + 0.5);
         loc.setZ(loc.getBlockZ() + 0.5);
@@ -210,15 +205,46 @@ public class ChairHandler {
             default -> 0;
         });
 
-        ArmorStand chair = p.getWorld().spawn(loc, ArmorStand.class);
+        ArmorStand chair = p.getWorld().spawn(loc, ArmorStand.class, stand -> {
+            PersistentDataContainer data = stand.getPersistentDataContainer();
+            data.set(namespacedKey, PersistentDataType.INTEGER, 1);
 
-        PersistentDataContainer data = chair.getPersistentDataContainer();
-        data.set(namespacedKey, PersistentDataType.INTEGER, 1);
+            stand.setInvisible(false);
+            stand.setGravity(false);
+            stand.setInvulnerable(true);
+            stand.setCustomNameVisible(false);
+            stand.setMarker(true);
+            stand.setPersistent(false);
+            stand.setAI(false);
+            stand.setCollidable(false);
+            stand.setCanMove(false);
+            stand.setCanTick(false);
 
-        chair.setInvisible(true);
-        chair.setGravity(false);
-        chair.setInvulnerable(true);
-        chair.setCustomNameVisible(false);
+            AttributeInstance atr = stand.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+            if (atr != null) { atr.setBaseValue(0); }
+
+            for(EquipmentSlot slot : EquipmentSlot.values()) {
+                stand.addEquipmentLock(slot, ArmorStand.LockType.ADDING_OR_CHANGING);
+            }
+        });
+
+        ChairSitEvent event = new ChairSitEvent(p, block, face, chair, height, p.getLocation());
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            chair.remove();
+            return;
+        }
+        if (Config.SOUND_ENABLED.asBoolean()) {
+            p.playSound(p.getLocation(), Config.SOUND_SIT.asString(), Config.SOUND_SIT_VOLUME.asFloat(), Config.SOUND_SIT_PITCH.asFloat());
+        }
+        if (Config.EFFECT_SIT_ENABLED.asBoolean()) {
+            List<PotionEffect> effects = Utils.getEffects(Config.EFFECT_SIT_LIST);
+            if (!effects.isEmpty()) {
+                p.addPotionEffects(effects);
+            }
+        }
+
+        dismounts.put(p.getUniqueId(), event.getDismountLocation());
 
         Location n = p.getLocation().clone();
         n.setPitch(0);
@@ -226,7 +252,9 @@ public class ChairHandler {
         p.teleport(n);
 
         chair.addPassenger(p);
-
+        Bukkit.getScheduler().scheduleSyncDelayedTask(RealChairs.getInstance(), () -> {
+            p.sendActionBar(Lang.STANDUP_PRESS.asComponent());
+        },2);
 
         if (Config.USE_MESSAGES.asBoolean()) {
             p.sendMessage(Lang.SITTING.prefixed());

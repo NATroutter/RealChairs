@@ -5,10 +5,12 @@ import fi.natroutter.natlibs.objects.ParticleSettings;
 import fi.natroutter.realchairs.RealChairs;
 import fi.natroutter.realchairs.Utilities.Items;
 import fi.natroutter.realchairs.Utilities.Utils;
+import fi.natroutter.realchairs.events.ChairStandEvent;
 import fi.natroutter.realchairs.files.Config;
 import fi.natroutter.realchairs.files.Lang;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -23,6 +25,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.potion.PotionEffect;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
 import java.util.*;
@@ -76,20 +79,38 @@ public class ChairListener implements Listener {
         if (p.isInsideVehicle()) {return;}
         if (p.isSneaking()) {return;}
 
-        if (p.hasPermission("realchairs.use")) {
-            Location loc = block.getLocation();
-            loc.setX(loc.getBlockX() + 0.5);
-            loc.setZ(loc.getBlockZ() + 0.5);
-            Collection<Entity> ents = p.getWorld().getNearbyEntities(loc.add(0, -1, 0), 0.2, 0.2, 0.2);
-            for (Entity ent : ents) {
-                if (chairHandler.isChair(ent)) return;
-            }
-            chairHandler.sit(p, block);
-        } else {
-            if (Config.USE_MESSAGES.asBoolean()) {
-                p.sendMessage(Lang.NO_PERM.prefixed());
+        if (Config.PERM_ENABLED.asBoolean()) {
+            if (!p.hasPermission(Config.PERM_USE_CHAIRS.asString())) {
+                if (Config.USE_MESSAGES.asBoolean()) {
+                    p.sendMessage(Lang.NO_PERM.prefixed());
+                }
             }
         }
+        Location loc = block.getLocation();
+        loc.setX(loc.getBlockX() + 0.5);
+        loc.setZ(loc.getBlockZ() + 0.5);
+
+
+        double height = chairHandler.getChairHeight(block);
+        Location center = block.getLocation().clone().add(0.5, 0, 0.5);
+        Location chairLoc = center.clone().add(0, height, 0);
+
+        Collection<Entity> ents = p.getWorld().getNearbyEntities(chairLoc, 0.2, 0.2, 0.2);
+        for (Entity ent : ents) {
+            if (chairHandler.isChair(ent)){
+                if (Config.USE_MESSAGES.asBoolean()) {
+                    p.sendMessage(Lang.CHAIR_OCCUPIED.prefixed());
+                }
+                return;
+            }
+        }
+        if (e.hasItem() && e.getItem() != null && e.getItem().getType() != Material.AIR) {
+            if (Config.REQUIRE_EMPTY_HAND.asBoolean()) {
+                return;
+            }
+        }
+        chairHandler.sit(p, block);
+
 
     }
 
@@ -138,6 +159,22 @@ public class ChairListener implements Listener {
         if (e.getEntity() instanceof Player p) {
             if (!chairHandler.isChair(e.getDismounted())) {return;}
             ArmorStand chair = (ArmorStand)e.getDismounted();
+
+            ChairStandEvent event = new ChairStandEvent(p, chair);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                e.setCancelled(true);
+                return;
+            }
+            if (Config.SOUND_ENABLED.asBoolean()) {
+                p.playSound(p.getLocation(), Config.SOUND_STAND.asString(), Config.SOUND_STAND_VOLUME.asFloat(), Config.SOUND_STAND_PITCH.asFloat());
+            }
+            if (Config.EFFECT_STAND_ENABLED.asBoolean()) {
+                List<PotionEffect> effects = Utils.getEffects(Config.EFFECT_STAND_LIST);
+                if (!effects.isEmpty()) {
+                    p.addPotionEffects(effects);
+                }
+            }
 
             if (Config.USE_MESSAGES.asBoolean()) {
                 p.sendMessage(Lang.STAND_UP.prefixed());
