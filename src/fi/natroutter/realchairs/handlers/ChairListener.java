@@ -1,17 +1,16 @@
 package fi.natroutter.realchairs.handlers;
 
-import fi.natroutter.natlibs.handlers.Particles;
-import fi.natroutter.natlibs.objects.ParticleSettings;
 import fi.natroutter.realchairs.RealChairs;
 import fi.natroutter.realchairs.Utilities.Items;
+import fi.natroutter.realchairs.Utilities.Sounds;
 import fi.natroutter.realchairs.Utilities.Utils;
+import fi.natroutter.realchairs.commands.MainCommand;
 import fi.natroutter.realchairs.events.ChairStandEvent;
 import fi.natroutter.realchairs.files.Config;
 import fi.natroutter.realchairs.files.Lang;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
@@ -36,29 +35,57 @@ public class ChairListener implements Listener {
 
     @EventHandler
     public void onWandUse(PlayerInteractEvent e) {
-        if (!e.hasBlock() || e.getClickedBlock() == null) { return; }
         if (e.getHand() != EquipmentSlot.HAND) return;
         if (!e.hasItem() || e.getItem() == null) return;
         if (!Items.chairTool().isSimilar(e.getItem())) return;
         e.setCancelled(true);
 
         Player p = e.getPlayer();
-        Block block = e.getClickedBlock();
-        BlockFace face = e.getBlockFace();
         Action action = e.getAction();
 
+        if (!p.hasPermission(Config.CMD_TOOL_PERM.asString())) {
+            p.sendMessage(Lang.NO_PERM.prefixed());
+            p.getInventory().remove(e.getItem());
+            Sounds.play(p, Sounds.type.ERROR);
+            return;
+        }
+
+        if (action.equals(Action.RIGHT_CLICK_AIR)) {
+            if (p.isSneaking()) {
+                RealChairs.getMainGUI().show(p);
+            }
+            return;
+        } else if (action.equals(Action.LEFT_CLICK_AIR)) {
+            if (p.isSneaking()) {
+                chairHandler.toggleDisplay(p);
+            }
+            return;
+        }
+
+        if (!e.hasBlock() || e.getClickedBlock() == null) { return; }
+        Block block = e.getClickedBlock();
+        BlockFace face = e.getBlockFace();
+
         if (action.equals(Action.LEFT_CLICK_BLOCK)) {
-            if (chairHandler.isChair(block)) {
-                p.sendMessage(Lang.ALREADY_CHAIR.prefixed());
-                return;
+            if (p.isSneaking()) {
+                chairHandler.toggleDisplay(p);
+            } else {
+                if (chairHandler.isChair(block)) {
+                    p.sendMessage(Lang.ALREADY_CHAIR.prefixed());
+                    return;
+                }
+                chairHandler.addChair(p, UUID.randomUUID(), block, face);
             }
-            chairHandler.addChair(p, UUID.randomUUID(), block, face);
         } else if (action.equals(Action.RIGHT_CLICK_BLOCK)) {
-            if (!chairHandler.isChair(block)) {
-                p.sendMessage(Lang.BLOCK_NOT_CHAIR.prefixed());
-                return;
+            if (p.isSneaking()) {
+                RealChairs.getMainGUI().show(p);
+            } else {
+                if (!chairHandler.isChair(block)) {
+                    p.sendMessage(Lang.BLOCK_NOT_CHAIR.prefixed());
+                    return;
+                }
+                chairHandler.removeChair(p, block);
             }
-            chairHandler.removeChair(p, block);
         }
     }
 
@@ -152,6 +179,8 @@ public class ChairListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
         ChairHandler.dismounts.remove(e.getPlayer().getUniqueId());
+        MainCommand.wipeConfirm.remove(e.getPlayer().getUniqueId());
+        MainCommand.tpConfirm.remove(e.getPlayer().getUniqueId());
     }
 
     @EventHandler
@@ -166,9 +195,7 @@ public class ChairListener implements Listener {
                 e.setCancelled(true);
                 return;
             }
-            if (Config.SOUND_ENABLED.asBoolean()) {
-                p.playSound(p.getLocation(), Config.SOUND_STAND.asString(), Config.SOUND_STAND_VOLUME.asFloat(), Config.SOUND_STAND_PITCH.asFloat());
-            }
+            Sounds.play(p, Sounds.type.STAND);
             if (Config.EFFECT_STAND_ENABLED.asBoolean()) {
                 List<PotionEffect> effects = Utils.getEffects(Config.EFFECT_STAND_LIST);
                 if (!effects.isEmpty()) {

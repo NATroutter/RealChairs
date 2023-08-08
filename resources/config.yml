@@ -15,9 +15,9 @@ Commands:
     Help:
       Argument: "help"
       Permission: "realchairs.help"
-    Gui:
-      Argument: "gui"
-      Permission: "realchairs.gui"
+    Menu:
+      Argument: "menu"
+      Permission: "realchairs.menu"
     Add:
       Argument: "add"
       Permission: "realchairs.add"
@@ -51,15 +51,54 @@ Commands:
       Permission: "realchairs.sit"
       PermissionSelectHeight: "realchairs.sit.height"
 Sounds:
-  Enabled: true
   Sit:
+    Enabled: true
     Sound: "minecraft:ui.toast.in"
+    Category: MASTER
     Pitch: 1.0
-    Volume: 50
+    Volume: 1
   Stand:
+    Enabled: true
     Sound: "minecraft:ui.toast.out"
+    Category: MASTER
     Pitch: 1.0
-    Volume: 50
+    Volume: 1
+  AddChair:
+    Enabled: true
+    Sound: "minecraft:entity.item_frame.add_item"
+    Category: MASTER
+    Pitch: 0.5
+    Volume: 1
+  RemoveChair:
+    Enabled: true
+    Sound: "minecraft:entity.item_frame.remove_item"
+    Category: MASTER
+    Pitch: 0.5
+    Volume: 1
+  Error:
+    Enabled: true
+    Sound: "minecraft:entity.villager.no"
+    Category: MASTER
+    Pitch: 1.0
+    Volume: 1
+  Open:
+    Enabled: true
+    Sound: "minecraft:block.ender_chest.open"
+    Category: MASTER
+    Pitch: 1.0
+    Volume: 1
+  Close:
+    Enabled: true
+    Sound: "minecraft:block.ender_chest.close"
+    Category: MASTER
+    Pitch: 1.0
+    Volume: 1
+  Click:
+    Enabled: true
+    Sound: "minecraft:ui.button.click"
+    Category: MASTER
+    Pitch: 1.0
+    Volume: 1
 Effects:
   WhenSit:
     Enabled: false

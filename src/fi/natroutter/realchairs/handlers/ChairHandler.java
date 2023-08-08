@@ -1,5 +1,6 @@
 package fi.natroutter.realchairs.handlers;
 
+import fi.natroutter.realchairs.Utilities.Sounds;
 import fi.natroutter.realchairs.Utilities.Utils;
 import fi.natroutter.realchairs.events.ChairSitEvent;
 import fi.natroutter.realchairs.files.Config;
@@ -15,7 +16,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -32,7 +32,7 @@ public class ChairHandler {
 
     private NamespacedKey namespacedKey = new NamespacedKey(RealChairs.getInstance(), "RealChairs");
 
-    public static ConcurrentHashMap<UUID, Location> dismounts = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<UUID, Location> dismounts = new ConcurrentHashMap<>();
     private static ConcurrentHashMap<UUID, Chair> chairs = new ConcurrentHashMap<>();
 
     public static ArrayList<UUID> display = new ArrayList<>();
@@ -163,6 +163,7 @@ public class ChairHandler {
         database.save("Chairs", uuid+".height", height);
 
         Utils.drawBlock(p, block.getLocation(), ColorTable.ADDED);
+        Sounds.play(p, Sounds.type.ADD);
         p.sendMessage(Lang.CHAIR_ADDED.prefixed());
     }
 
@@ -174,6 +175,7 @@ public class ChairHandler {
                 database.save("Chairs", uuid.toString(), null);
             }
         }
+        Sounds.play(p, Sounds.type.REMOVE);
         Utils.drawBlock(p, block.getLocation(), ColorTable.REMOVED);
         p.sendMessage(Lang.CHAIR_REMOVED.prefixed());
     }
@@ -190,6 +192,26 @@ public class ChairHandler {
             }
         }
         return null;
+    }
+
+    public void toggleDisplay(Player p) {
+        if (getChairs().size() > 0 ) {
+            if (ChairHandler.display.contains(p.getUniqueId())) {
+                ChairHandler.display.remove(p.getUniqueId());
+                p.sendMessage(Lang.CHAIR_DISPLAY.prefixed(Placeholder.component("state", Lang.TOGGLE_OFF.asComponent())));
+            } else {
+                ChairHandler.display.add(p.getUniqueId());
+                p.sendMessage(Lang.CHAIR_DISPLAY.prefixed(Placeholder.component("state", Lang.TOGGLE_ON.asComponent())));
+            }
+        } else {
+            if (ChairHandler.display.contains(p.getUniqueId())) {
+                ChairHandler.display.remove(p.getUniqueId());
+                p.sendMessage(Lang.CHAIR_DISPLAY.prefixed(Placeholder.component("state", Lang.TOGGLE_OFF.asComponent())));
+            } else {
+                p.sendMessage(Lang.NO_CHAIRS.prefixed());
+                Sounds.play(p, Sounds.type.ERROR);
+            }
+        }
     }
 
     public void sit(Player p, Block block) {
@@ -240,9 +262,7 @@ public class ChairHandler {
             chair.remove();
             return;
         }
-        if (Config.SOUND_ENABLED.asBoolean()) {
-            p.playSound(p.getLocation(), Config.SOUND_SIT.asString(), Config.SOUND_SIT_VOLUME.asFloat(), Config.SOUND_SIT_PITCH.asFloat());
-        }
+        Sounds.play(p, Sounds.type.SIT);
         if (Config.EFFECT_SIT_ENABLED.asBoolean()) {
             List<PotionEffect> effects = Utils.getEffects(Config.EFFECT_SIT_LIST);
             if (!effects.isEmpty()) {
