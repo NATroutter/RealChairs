@@ -3,6 +3,7 @@ package fi.natroutter.realchairs.files;
 import fi.natroutter.realchairs.RealChairs;
 import fi.natroutter.natlibs.config.ILang;
 import fi.natroutter.natlibs.config.Language;
+import fi.natroutter.realchairs.handlers.Chair;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -36,6 +37,24 @@ public enum Lang implements ILang {
     CUSTOM_HEIGHT_DISABLED("CustomChairHeightDisabled"),
     CHAIR_OCCUPIED("ChairOccupied"),
     STANDUP_PRESS("StandupPress"),
+
+    GUI_TITLE("Gui.Title"),
+    GUI_CONFIRM_TITLE("Gui.ConfirmTitle"),
+
+    GUI_YES_NAME("Gui.ConfirmYes.Name"),
+    GUI_YES_LORE("Gui.ConfirmYes.Lore"),
+
+    GUI_NO_NAME("Gui.ConfirmNo.Name"),
+    GUI_NO_LORE("Gui.ConfirmNo.Lore"),
+
+    GUI_CHAIR_NAME("Gui.Chair.Name"),
+    GUI_CHAIR_LORE("Gui.Chair.Lore"),
+    GUI_BACK_NAME("Gui.Back.Name"),
+    GUI_BACK_LORE("Gui.Back.Lore"),
+    GUI_NEXT_NAME("Gui.Next.Name"),
+    GUI_NEXT_LORE("Gui.Next.Lore"),
+    GUI_CLOSE_NAME("Gui.Close.Name"),
+    GUI_CLOSE_LORE("Gui.Close.Lore"),
 
     CONFIRM_ACCEPT_BTN("ConfirmMessage.Accpet_button"),
     CONFIRM_ACCEPT_HINT("ConfirmMessage.Accept_hint"),

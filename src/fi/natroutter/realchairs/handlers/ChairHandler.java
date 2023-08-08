@@ -28,21 +28,27 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ChairHandler {
 
-    private final YamlDatabase database = RealChairs.getDatabase();
+    private static final YamlDatabase database = RealChairs.getDatabase();
 
     private NamespacedKey namespacedKey = new NamespacedKey(RealChairs.getInstance(), "RealChairs");
 
     public static ConcurrentHashMap<UUID, Location> dismounts = new ConcurrentHashMap<>();
     private static ConcurrentHashMap<UUID, Chair> chairs = new ConcurrentHashMap<>();
-    private static ConcurrentHashMap<UUID, Double> heights = new ConcurrentHashMap<>();
 
     public static ArrayList<UUID> display = new ArrayList<>();
 
     public static double getHeight(Player p, Block block) {
-        return heights.getOrDefault(p.getUniqueId(), Chair.defaultHeight(block));
+        if (database.valueExists(p, "Height")) {
+            return database.getDouble(p, "Height");
+        }
+        return Chair.defaultHeight(block);
     }
-    public static void setHeight(Player p, double height) {heights.put(p.getUniqueId(), height);}
-    public static void disableHeight(Player p) {heights.remove(p.getUniqueId());}
+    public static void setHeight(Player p, double height) {
+        database.save(p, "Height", height);
+    }
+    public static void disableHeight(Player p) {
+        database.save(p, "Height", null);
+    }
 
     public ChairHandler(JavaPlugin plugin) {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
@@ -209,7 +215,7 @@ public class ChairHandler {
             PersistentDataContainer data = stand.getPersistentDataContainer();
             data.set(namespacedKey, PersistentDataType.INTEGER, 1);
 
-            stand.setInvisible(false);
+            stand.setInvisible(true);
             stand.setGravity(false);
             stand.setInvulnerable(true);
             stand.setCustomNameVisible(false);

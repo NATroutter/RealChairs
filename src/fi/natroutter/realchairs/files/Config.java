@@ -46,6 +46,9 @@ public enum Config implements IConfig {
     CMD_HELP_ARG("Commands.Help.Argument"),
     CMD_HELP_PERM("Commands.Help.Permission"),
 
+    CMD_GUI_ARG("Commands.Gui.Argument"),
+    CMD_GUI_PERM("Commands.Gui.Permission"),
+
     CMD_ADD_ARG("Commands.Add.Argument"),
     CMD_ADD_PERM("Commands.Add.Permission"),
 

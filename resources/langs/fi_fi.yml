@@ -24,7 +24,39 @@ NoPendingConfirmations: "&7Ei ole odottavia vahvistuksia!"
 CustomChairHeightDisabled: "&7Mukautettu tuolin korkeus pois käytöstä!"
 ChairOccupied: "&7Tämä tuoli on varattu!"
 StandupPress: "&dPaina &5<lang:key.sneak> &dseistäksesi!"
-
+Gui:
+  Title: "&5&lTuolit &d<page>&8/&d<max_page>"
+  ConfirmTitle: "&5&lVahvista"
+  ConfirmYes:
+    Name: "&a&lKYLLÄ"
+    Lore:
+      - "&7Tätä toimintoa ei voi peruuttaa!"
+  ConfirmNo:
+    Name: "&c&lEI"
+    Lore:
+      - "&7Jos hylkäät, mikään ei tapahdu!"
+  Chair:
+    Name: "&5&lTuoli"
+    Lore:
+      - "&7Palikka&8: &d<block>"
+      - "&7Korkeus&8: &d<height>"
+      - "&7Suunta&8: &d<face>"
+      - "&7Sijainti&8: &d<world>&7, &d<x>&7, &d<y>&7, &d<z>"
+      - " "
+      - "&dVasen painallus &8&l| &7Teleporttaa tuoliin"
+      - "&dOikea painallus &8&l| &7Poista tuoli"
+  Back:
+    Name: "&5&lTaaksepäin"
+    Lore:
+      - "&7Paina tästä palataksesi takaisin"
+  Next:
+    Name: "&5&lSeuraava"
+    Lore:
+      - "&7Paina tästä siiirtyäksesi seuraavalle sivulle"
+  Close:
+    Name: "&5&lSulje"
+    Lore:
+      - "&7Paina tästä sulkeaksesi valikon"
 ConfirmMessage:
   Accpet_button: "&a&l[KYLLÄ]"
   Accept_hint: "&5&lPaina tästä hyväksyäksesi!<br>&dTätä toimintoa ei voi peruuttaa"
@@ -56,7 +88,6 @@ cfm:
   Teleport_btn: "&8[&dTELEPORT&8]"
   Teleport_hint: "&dNapsauta tästä teleportataksesi!"
 HelpMessage:
-  - " "
   - "&8&l&m━━━━━━━━━━━━&8&l|&5&l RealChairs &8&l|&m━━━━━━━━━━━━"
   - " "
   - "&5&lKorkeus Ohjeet:"
@@ -65,14 +96,15 @@ HelpMessage:
   - " "
   - "&8&l» &7Valittu Korkeus&8: &d<selected_height>"
   - " "
-  - "&8&l» &d/<command> <arg_add> [korkeus] &8|| &7Lisää kohdennetun palikan tuoliksi"
-  - "&8&l» &d/<command> <arg_sit> [korkeus] &8|| &7Pystyt testaamaan istumis sijaintia"
+  - "&8&l» &d/<command> <arg_help> &8|| &7Näyttää tämän apu viestin"
+  - "&8&l» &d/<command> <arg_gui> &8|| &7Avaa muokkaus valikon"
   - "&8&l» &d/<command> <arg_list> &8|| &7Näytä listan Tuoleista"
   - "&8&l» &d/<command> <arg_remove> &8|| &7Poista tuoli kohdennetusta palikasta"
   - "&8&l» &d/<command> <arg_reload> &8|| &7Lataa asetukset uudelleen"
   - "&8&l» &d/<command> <arg_show> &8|| &7Näyttää hiukkasia kaikkien tuolien kohdalla"
-  - "&8&l» &d/<command> <arg_height> <korkeus/<arg_disable>> &8|| &7Muuta tuolien oletus korkeutta"
   - "&8&l» &d/<command> <arg_tool> &8|| &7Lisää tuoli työkalu tavaraluetteloosi"
+  - "&8&l» &d/<command> <arg_height> <korkeus/<arg_disable>> &8|| &7Muuta tuolien oletus korkeutta"
+  - "&8&l» &d/<command> <arg_add> [korkeus] &8|| &7Lisää kohdennetun palikan tuoliksi"
+  - "&8&l» &d/<command> <arg_sit> [korkeus] &8|| &7Pystyt testaamaan istumis sijaintia"
   - " "
   - "&8&l&m━━━━━━━━━━━━&8&l|&5&l RealChairs &8&l|&m━━━━━━━━━━━━"
-  - " "

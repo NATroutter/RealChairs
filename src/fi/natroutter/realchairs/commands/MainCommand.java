@@ -53,6 +53,8 @@ public class MainCommand extends Command {
             p.sendMessage("§8§l» §7RealChairs version §d" + RealChairs.getInstance().getDescription().getVersion());
             p.sendMessage("§8§l» §7Made by: §dNATroutter");
             p.sendMessage("§8§l» §7Website: §dhttps://NATroutter.fi");
+            p.sendMessage(" ");
+            p.sendMessage("§8§l» §7To get started do §d/"+label+" help");
             p.sendMessage("§8§l§m━━━━━━━━━━━━§8§l|§5§l RealChairs §8§l|§m━━━━━━━━━━━━");
             p.sendMessage(" ");
         } else if (args.length == 1) {
@@ -63,7 +65,9 @@ public class MainCommand extends Command {
                 p.sendMessage(Lang.HELP_MESSAGE.asSingleComponent(
                         Placeholder.parsed("command", label),
                         Placeholder.parsed("selected_height", String.valueOf(ChairHandler.getHeight(p,null))),
+                        Placeholder.parsed("arg_help", Config.CMD_HELP_ARG.asString()),
                         Placeholder.parsed("arg_add", Config.CMD_ADD_ARG.asString()),
+                        Placeholder.parsed("arg_gui", Config.CMD_GUI_ARG.asString()),
                         Placeholder.parsed("arg_sit", Config.CMD_SIT_ARG.asString()),
                         Placeholder.parsed("arg_list", Config.CMD_LIST_ARG.asString()),
                         Placeholder.parsed("arg_remove", Config.CMD_REMOVE_ARG.asString()),
@@ -96,6 +100,13 @@ public class MainCommand extends Command {
                 } else {
                     p.sendMessage(Lang.NO_CHAIRS.prefixed());
                 }
+
+            } else if (args[0].equalsIgnoreCase(Config.CMD_GUI_ARG.asString())) {
+                if (!p.hasPermission(Config.CMD_GUI_PERM.asString())) {
+                    p.sendMessage(Lang.NO_PERM.prefixed());
+                }
+                RealChairs.getMainGUI().show(p);
+
             } else if (args[0].equalsIgnoreCase(Config.CMD_CLEAN_ARG.asString())) {
                 if (!p.hasPermission(Config.CMD_CLEAN_PERM.asString())) {
                     p.sendMessage(Lang.NO_PERM.prefixed());
@@ -309,7 +320,8 @@ public class MainCommand extends Command {
                     new Complete(Config.CMD_TOOL_ARG, Config.CMD_TOOL_PERM),
                     new Complete(Config.CMD_HEIGHT_ARG, Config.CMD_HEIGHT_PERM),
                     new Complete(Config.CMD_CLEAN_ARG, Config.CMD_CLEAN_PERM),
-                    new Complete(Config.CMD_WIPE_ARG, Config.CMD_WIPE_PERM)
+                    new Complete(Config.CMD_WIPE_ARG, Config.CMD_WIPE_PERM),
+                    new Complete(Config.CMD_GUI_ARG, Config.CMD_GUI_PERM)
             ));
             if (sender.hasPermission(Config.CMD_SIT_PERM.asString()) || sender.hasPermission(Config.CMD_SIT_PERM_SELECT_HEIGHT.asString())) {
                 if (sender.hasPermission(Config.CMD_SIT_PERM.asString())) {
@@ -322,12 +334,20 @@ public class MainCommand extends Command {
 
             return Utilities.getCompletesWithPerms(sender,args[0],list);
         } else if (args.length == 2) {
-            if (args[0].equalsIgnoreCase(Config.CMD_ADD_ARG.asString())) {
+            if (args[0].equalsIgnoreCase(Config.CMD_HEIGHT_ARG.asString())) {
                 if (sender instanceof Player p) {
                     return Utilities.getCompletes(sender, args[1], List.of(
-                            String.valueOf(ChairHandler.getHeight(p,null)),
+                            String.valueOf(ChairHandler.getHeight(p, null)),
                             Config.CMD_HEIGHT_DISABLE.asString()
                     ));
+                }
+            } else {
+                if (args[0].equalsIgnoreCase(Config.CMD_ADD_ARG.asString())) {
+                    if (sender instanceof Player p) {
+                        return Utilities.getCompletes(sender, args[1], List.of(
+                                String.valueOf(ChairHandler.getHeight(p, null))
+                        ));
+                    }
                 }
             }
         }

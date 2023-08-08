@@ -25,6 +25,39 @@ CustomChairHeightDisabled: "&7Custom chair height disabled!"
 ChairOccupied: "&7This chair is occupied!"
 StandupPress: "&dPress &5<lang:key.sneak> &dto stand up!"
 
+Gui:
+  Title: "&5&lChairs &d<page>&8/&d<max_page>"
+  ConfirmTitle: "&5&lConfirm"
+  ConfirmYes:
+    Name: "&a&lYES"
+    Lore:
+      - "&7This action cannot be undone!"
+  ConfirmNo:
+    Name: "&c&lNO"
+    Lore:
+      - "&7If you deny, nothing will happen!"
+  Chair:
+    Name: "&5&lChair"
+    Lore:
+      - "&7Block&8: &d<block>"
+      - "&7Height&8: &d<height>"
+      - "&7Facing&8: &d<face>"
+      - "&7Location&8: &d<world>&7, &d<x>&7, &d<y>&7, &d<z>"
+      - " "
+      - "&dLeft-Click &8&l| &7Teleport to chair"
+      - "&dRight-Click &8&l| &7Remove chair"
+  Back:
+    Name: "&5&lPrevious"
+    Lore:
+      - "&7Click here to go previous page"
+  Next:
+    Name: "&5&lNext"
+    Lore:
+      - "&7Click here to go next page"
+  Close:
+    Name: "&5&lClose"
+    Lore:
+      - "&7Click here to close the menu"
 ConfirmMessage:
   Accpet_button: "&a&l[YES]"
   Accept_hint: "&5&lClick here to accept!<br>&dThis action cannot be undone!"
@@ -56,7 +89,6 @@ cfm:
   Teleport_btn: "&8[&dTELEPORT&8]"
   Teleport_hint: "&dClick here to teleport!"
 HelpMessage:
-  - " "
   - "&8&l&m━━━━━━━━━━━━&8&l|&5&l RealChairs &8&l|&m━━━━━━━━━━━━"
   - " "
   - "&5&lHeight Guide:"
@@ -65,14 +97,15 @@ HelpMessage:
   - " "
   - "&8&l» &7Selected height&8: &d<selected_height>"
   - " "
-  - "&8&l» &d/<command> <arg_add> [height] &8|| &7Adds targeted block as a chair"
-  - "&8&l» &d/<command> <arg_sit> [height] &8|| &7You can test the sitting location"
+  - "&8&l» &d/<command> <arg_help> &8|| &7Shows this help message"
+  - "&8&l» &d/<command> <arg_gui> &8|| &7Opens the gui"
   - "&8&l» &d/<command> <arg_list> &8|| &7Shows a list of chairs"
   - "&8&l» &d/<command> <arg_remove> &8|| &7Removes the chair from the targeted block"
   - "&8&l» &d/<command> <arg_reload> &8|| &7Reloads the config files"
   - "&8&l» &d/<command> <arg_show> &8|| &7Shows particles on all chairs"
-  - "&8&l» &d/<command> <arg_height> <height/<arg_disable>> &8|| &7Changes the default height of chairs"
   - "&8&l» &d/<command> <arg_tool> &8|| &7Adds the chair tool to your inventory"
+  - "&8&l» &d/<command> <arg_height> <height/<arg_disable>> &8|| &7Changes the default height of chairs"
+  - "&8&l» &d/<command> <arg_add> [height] &8|| &7Adds targeted block as a chair"
+  - "&8&l» &d/<command> <arg_sit> [height] &8|| &7You can test the sitting location"
   - " "
   - "&8&l&m━━━━━━━━━━━━&8&l|&5&l RealChairs &8&l|&m━━━━━━━━━━━━"
-  - " "

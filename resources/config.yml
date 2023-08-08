@@ -15,6 +15,9 @@ Commands:
     Help:
       Argument: "help"
       Permission: "realchairs.help"
+    Gui:
+      Argument: "gui"
+      Permission: "realchairs.gui"
     Add:
       Argument: "add"
       Permission: "realchairs.add"

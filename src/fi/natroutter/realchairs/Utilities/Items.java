@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemFlag;
 public class Items {
 
     public static BaseItem chairTool() {
-        BaseItem item = new BaseItem(Material.BLAZE_ROD);
+        BaseItem item = new BaseItem(Material.FEATHER);
         item.setGlow(true);
         item.addItemFlags(ItemFlag.values());
         item.name(Lang.TOOL_NAME);

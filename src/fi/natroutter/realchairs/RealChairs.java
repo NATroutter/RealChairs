@@ -1,7 +1,10 @@
 package fi.natroutter.realchairs;
 
+import com.sun.tools.javac.Main;
 import fi.natroutter.realchairs.handlers.ChairHandler;
 import fi.natroutter.natlibs.handlers.database.YamlDatabase;
+import fi.natroutter.realchairs.handlers.gui.ConfirmGUI;
+import fi.natroutter.realchairs.handlers.gui.MainGUI;
 import lombok.Getter;
 import fi.natroutter.realchairs.commands.MainCommand;
 import fi.natroutter.realchairs.handlers.ChairListener;
@@ -28,6 +31,8 @@ public class RealChairs extends JavaPlugin {
     @Getter private static JavaPlugin instance;
     @Getter private static YamlDatabase database;
     @Getter private static ChairHandler chairHandler;
+    @Getter private static ConfirmGUI confirmGUI;
+    @Getter private static MainGUI mainGUI;
 
     //TODO:
     // - [DONE] Sit potion effects (disable/enable setting)
@@ -46,6 +51,9 @@ public class RealChairs extends JavaPlugin {
 
         database = new YamlDatabase(this);
         chairHandler = new ChairHandler(this);
+
+        confirmGUI = new ConfirmGUI();
+        mainGUI = new MainGUI();
 
         CommandMap map = Bukkit.getCommandMap();
         PluginManager pm = Bukkit.getPluginManager();
